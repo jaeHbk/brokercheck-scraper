@@ -22,6 +22,19 @@ You must have Go installed on your system.
 - Run the script: `go run main.go`
 - The script will log its progress to the terminal and create the output files in the same directory.
 
+## Configuration
+To change the search location or page size, edit the `const` block at the top of `main.go`:
+```
+const (
+	apiURL   = "https://api.brokercheck.finra.org/search/individual"
+	latitude = "38.895568" // Change this for a new latitude
+	longitude = "-77.026278" // Change this for a new longitude
+	radius   = "25"         // Search radius in miles
+	pageSize = 100        // How many results to fetch per API call
+)
+```
+
+
 
 ## Resource
 [Main website](https://brokercheck.finra.org/)
