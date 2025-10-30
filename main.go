@@ -50,11 +50,11 @@ var client = &http.Client{Timeout: 10 * time.Second}
 // API Search Parameters
 // These are from the URL found when inspecting Fetch/XHR of API from Broker Check website
 const (
-	apiURL   = "https://api.brokercheck.finra.org/search/individual"
-	latitude = "38.895568" // For Washington D.C. area (example)
+	apiURL    = "https://api.brokercheck.finra.org/search/individual"
+	latitude  = "38.895568"  // For Washington D.C. area (example)
 	longitude = "-77.026278" // For Washington D.C. area (example)
-	radius   = "25"         // 25-mile radius
-	pageSize = 100        // Get 100 results per page (max allowed is often 100 or 50)
+	radius    = "25"         // 25-mile radius
+	pageSize  = 100          // Get 100 results per page (max allowed is often 100 or 50)
 )
 
 func main() {
@@ -105,7 +105,24 @@ func main() {
 		time.Sleep(1 * time.Second) // Be polite! Let's not break the website
 	}
 
-	log.Printf("Finished scraping. Found %d brokers.", len(allBrokers))
+	log.Println("Deduplicating results...")
+
+	// Use a map to store unique brokers. The key is the CRD.
+	// The value is the broker object itself.
+	uniqueBrokers := make(map[string]BrokerSource)
+
+	for _, broker := range allBrokers {
+		// This will automatically overwrite any duplicate CRDs
+		uniqueBrokers[broker.CRD] = broker
+	}
+
+	// Now, convert the map back into a slice
+	finalBrokerList := make([]BrokerSource, 0, len(uniqueBrokers))
+	for _, broker := range uniqueBrokers {
+		finalBrokerList = append(finalBrokerList, broker)
+	}
+
+	log.Printf("Scrape complete. Found %d total brokers, %d unique.", len(allBrokers), len(finalBrokerList))
 
 	// Save the results
 	saveToJSON(allBrokers, "brokers.json")
