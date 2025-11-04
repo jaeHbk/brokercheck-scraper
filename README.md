@@ -37,4 +37,4 @@ const (
 This script is self-contained and uses only the Go standard library (net/http, encoding/json, encoding/csv, os, etc.). No external packages are required.
 
 ## Resource
-[Main website](https://brokercheck.finra.org/)
+[FINRA BrokerCheck website](https://brokercheck.finra.org/)
