@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -294,6 +295,7 @@ func finalizeEnrich(outDir string) error {
 	for _, d := range uniq {
 		list = append(list, d)
 	}
+	sort.Slice(list, func(i, j int) bool { return list[i].CRD < list[j].CRD })
 
 	// Pretty JSON
 	jp := filepath.Join(outDir, "brokers_detail.json")
