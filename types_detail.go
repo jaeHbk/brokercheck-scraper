@@ -3,8 +3,10 @@ package main
 // --- Detail-API response types ---
 //
 // The detail endpoint returns a doubly-wrapped JSON document. The outer
-// shape is HitData (re-used from types.go); the single hit's _source.content
-// is itself a JSON-encoded *string* whose unmarshaled shape is BrokerDetail.
+// envelope (DetailEnvelope) holds hits.hits[]._source.content, which is
+// itself a JSON-encoded string whose unmarshaled shape is BrokerDetail.
+// Note: this envelope is NOT the same as HitData in types.go; the _source
+// shapes differ.
 
 type DetailEnvelope struct {
 	Hits struct {
@@ -18,7 +20,7 @@ type DetailEnvelope struct {
 }
 
 type BrokerDetail struct {
-	CRD                   string                 `json:"crd"`
+	CRD                   string                 `json:"crd"` // injected by the scraper, not from the API
 	BasicInfo             BasicInformation       `json:"basicInformation"`
 	CurrentEmployments    []DetailedEmployment   `json:"currentEmployments"`
 	CurrentIAEmployments  []DetailedEmployment   `json:"currentIAEmployments"`
@@ -35,18 +37,20 @@ type BrokerDetail struct {
 	RegisteredSROs        []RegisteredSRO        `json:"registeredSROs"`
 	RegistrationCount     RegistrationCount      `json:"registrationCount"`
 	BrokerDetails         BrokerDetailsInner     `json:"brokerDetails"`
-	FetchedAt             string                 `json:"fetched_at"`
+	FetchedAt             string                 `json:"fetched_at"` // injected by the scraper, not from the API
 }
 
 type BasicInformation struct {
 	IndividualID                 int      `json:"individualId"`
 	FirstName                    string   `json:"firstName"`
-	MiddleName                   string   `json:"middleName"`
+	MiddleName                   string   `json:"middleName,omitempty"`
 	LastName                     string   `json:"lastName"`
-	OtherNames                   []string `json:"otherNames"`
+	OtherNames                   []string `json:"otherNames,omitempty"`
 	BCScope                      string   `json:"bcScope"`
 	IAScope                      string   `json:"iaScope"`
-	DaysInIndustryCalculatedDate string   `json:"daysInIndustryCalculatedDate"`
+	DaysInIndustryCalculatedDate string   `json:"daysInIndustryCalculatedDate,omitempty"`
+	DaysInIndustry               int      `json:"daysInIndustry,omitempty"`
+	Sanctions                    any      `json:"sanctions,omitempty"`
 }
 
 type DetailedEmployment struct {
