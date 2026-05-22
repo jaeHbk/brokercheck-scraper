@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -357,7 +358,7 @@ func loadCompleted(outDir string) (map[string]bool, error) {
 	done := map[string]bool{}
 	f, err := os.Open(outDir + "/progress.jsonl")
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return done, nil
 		}
 		return nil, err
@@ -457,6 +458,10 @@ func runSearch() {
 	}
 	limiter := newLimiter(rps, 0.05)
 	client := newClient(limiter, *flagMaxRetries)
+
+	if err := os.MkdirAll(*flagOutDir, 0755); err != nil {
+		log.Fatalf("mkdir out: %v", err)
+	}
 
 	log.Printf("loading zip codes from %s", *flagZipFile)
 	zips, err := loadZipCodes(*flagZipFile)

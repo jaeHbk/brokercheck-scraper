@@ -208,12 +208,15 @@ func (e *enrichWriter) markDone(crd string) {
 func (e *enrichWriter) markError(crd, reason string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	rec := map[string]string{"crd": crd, "reason": reason, "ts": time.Now().UTC().Format(time.RFC3339)}
-	enc, _ := json.Marshal(rec)
-	e.errs.Write(enc)
+	ts := time.Now().UTC().Format(time.RFC3339)
+	errRec, _ := json.Marshal(map[string]string{"crd": crd, "reason": reason, "ts": ts})
+	e.errs.Write(errRec)
 	e.errs.Write([]byte("\n"))
-	// Errored CRDs also count as 'done' so resume skips them.
-	e.progress.Write(enc)
+	// Errored CRDs also count as 'done' so resume skips them. Write a
+	// schema-clean progress record (no reason field) so progress.jsonl
+	// stays uniform; the diagnostic detail lives in enrich_errors.jsonl.
+	progRec, _ := json.Marshal(map[string]string{"crd": crd, "ts": ts})
+	e.progress.Write(progRec)
 	e.progress.Write([]byte("\n"))
 }
 

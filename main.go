@@ -44,6 +44,13 @@ func main() {
 	}
 	if subcmd == "search" && flag.NArg() >= 1 {
 		subcmd = flag.Arg(0)
+		// In `<binary> <flags...> <subcommand>` form, all flags must
+		// precede the subcommand: Go's flag.Parse stops at the first
+		// non-flag positional, so anything after the subcommand would be
+		// silently dropped. Error out instead of accepting unparseable args.
+		if flag.NArg() > 1 {
+			log.Fatalf("unexpected args after subcommand %q: %v (put flags BEFORE the subcommand or use the `<binary> <subcommand> <flags...>` form)", subcmd, flag.Args()[1:])
+		}
 	}
 	if *flagDedupeOnly {
 		subcmd = "dedupe"
