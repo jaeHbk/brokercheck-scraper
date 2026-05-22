@@ -142,6 +142,7 @@ func (c *Client) Get(ctx context.Context, url string) ([]byte, error) {
 		if resp.StatusCode == 429 || resp.StatusCode >= 500 {
 			retryAfter := resp.Header.Get("Retry-After")
 			resp.Body.Close()
+			lastErr = fmt.Errorf("HTTP %d", resp.StatusCode)
 			log.Printf("  attempt %d: HTTP %d (Retry-After=%s)", attempt, resp.StatusCode, retryAfter)
 			// breakerPause is the configured pause (60s in production,
 			// shrunk to milliseconds in tests). limiter.onError() returns

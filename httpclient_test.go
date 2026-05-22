@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -130,6 +131,9 @@ func TestClient_FailsAfterRetries(t *testing.T) {
 	_, err := c.Get(context.Background(), srv.URL)
 	if err == nil {
 		t.Fatalf("expected error after exhausted retries")
+	}
+	if !strings.Contains(err.Error(), "HTTP 500") {
+		t.Errorf("expected error to mention HTTP 500, got %v", err)
 	}
 }
 
