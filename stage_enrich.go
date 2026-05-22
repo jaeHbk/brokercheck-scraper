@@ -3,12 +3,14 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -264,8 +266,124 @@ func loadCRDsFromUnique(path string) ([]string, error) {
 	return out, nil
 }
 
-// finalizeEnrich is implemented in Task 8; placeholder no-op.
-func finalizeEnrich(outDir string) error { return nil }
+func finalizeEnrich(outDir string) error {
+	jsonlPath := filepath.Join(outDir, "brokers_detail.jsonl")
+	f, err := os.Open(jsonlPath)
+	if err != nil {
+		return fmt.Errorf("open %s: %w", jsonlPath, err)
+	}
+	defer f.Close()
+
+	uniq := map[string]*BrokerDetail{}
+	sc := bufio.NewScanner(f)
+	sc.Buffer(make([]byte, 1<<20), 8<<20)
+	for sc.Scan() {
+		var d BrokerDetail
+		if err := json.Unmarshal(sc.Bytes(), &d); err != nil {
+			continue
+		}
+		if d.CRD != "" {
+			uniq[d.CRD] = &d
+		}
+	}
+	if err := sc.Err(); err != nil {
+		return err
+	}
+
+	list := make([]*BrokerDetail, 0, len(uniq))
+	for _, d := range uniq {
+		list = append(list, d)
+	}
+
+	// Pretty JSON
+	jp := filepath.Join(outDir, "brokers_detail.json")
+	jf, err := os.Create(jp)
+	if err != nil {
+		return err
+	}
+	defer jf.Close()
+	enc := json.NewEncoder(jf)
+	enc.SetIndent("", "  ")
+	if err := enc.Encode(list); err != nil {
+		return err
+	}
+
+	// Flat CSV
+	cp := filepath.Join(outDir, "brokers_detail.csv")
+	cf, err := os.Create(cp)
+	if err != nil {
+		return err
+	}
+	defer cf.Close()
+	w := csv.NewWriter(cf)
+	defer w.Flush()
+	w.Write([]string{
+		"CRD", "FirstName", "MiddleName", "LastName", "OtherNamesCount",
+		"BCScope", "IAScope", "DaysInIndustryStart", "CurrentFirmName",
+		"CurrentBranchStreet", "CurrentBranchCity", "CurrentBranchState",
+		"CurrentBranchZip", "CurrentEmploymentCount", "PreviousEmploymentCount",
+		"ExamCategoriesList", "RegisteredStatesCount", "RegisteredStatesList",
+		"RegisteredSROsList", "DisclosureCount", "HasDisclosure", "HasBCComments", "FetchedAt",
+	})
+	for _, d := range list {
+		w.Write(detailToCSVRow(d))
+	}
+	return nil
+}
+
+func detailToCSVRow(d *BrokerDetail) []string {
+	bi := d.BasicInfo
+	var firmName, street, city, state, zip string
+	if len(d.CurrentEmployments) > 0 {
+		ce := d.CurrentEmployments[0]
+		firmName = ce.FirmName
+		if len(ce.BranchOfficeLocations) > 0 {
+			b := ce.BranchOfficeLocations[0]
+			street, city, state, zip = b.Street1, b.City, b.State, b.ZipCode
+		} else {
+			city, state = ce.City, ce.State
+		}
+	}
+	exams := []string{}
+	for _, e := range d.StateExams {
+		exams = append(exams, e.ExamCategory)
+	}
+	for _, e := range d.PrincipalExams {
+		exams = append(exams, e.ExamCategory)
+	}
+	for _, e := range d.ProductExams {
+		exams = append(exams, e.ExamCategory)
+	}
+	states := []string{}
+	for _, s := range d.RegisteredStates {
+		states = append(states, s.State)
+	}
+	sros := []string{}
+	for _, s := range d.RegisteredSROs {
+		sros = append(sros, s.SRO)
+	}
+	hasDisc := "N"
+	if len(d.Disclosures) > 0 {
+		hasDisc = "Y"
+	}
+	return []string{
+		d.CRD,
+		bi.FirstName, bi.MiddleName, bi.LastName,
+		fmt.Sprintf("%d", len(bi.OtherNames)),
+		bi.BCScope, bi.IAScope, bi.DaysInIndustryCalculatedDate,
+		firmName, street, city, state, zip,
+		fmt.Sprintf("%d", len(d.CurrentEmployments)),
+		fmt.Sprintf("%d", len(d.PreviousEmployments)),
+		strings.Join(exams, ";"),
+		fmt.Sprintf("%d", len(states)),
+		strings.Join(states, ";"),
+		strings.Join(sros, ";"),
+		fmt.Sprintf("%d", len(d.Disclosures)),
+		hasDisc,
+		d.BrokerDetails.HasBCComments,
+		d.FetchedAt,
+	}
+}
 
 // parseDetail (from Task 6) is unchanged.
 func parseDetail(crd string, body []byte) (*BrokerDetail, error) {

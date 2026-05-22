@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -176,5 +177,76 @@ func TestEnrich_ResumeSkipsCompleted(t *testing.T) {
 
 	if hits != 2 {
 		t.Errorf("expected 2 server hits (resume skipped 100), got %d", hits)
+	}
+}
+
+func TestFinalize_WritesJSONAndCSV(t *testing.T) {
+	dir := t.TempDir()
+	jsonl := filepath.Join(dir, "brokers_detail.jsonl")
+	rec1 := `{"crd":"100","basicInformation":{"firstName":"A","lastName":"B"},"currentEmployments":[{"firmName":"FirmX"}],"examsCount":{"productExamCount":1},"productExamCategory":[{"examCategory":"Series 7"}],"registeredStates":[{"state":"NY"}]}`
+	rec2 := `{"crd":"200","basicInformation":{"firstName":"C","lastName":"D"},"disclosures":[{"disclosureType":"Regulatory"}]}`
+	if err := os.WriteFile(jsonl, []byte(rec1+"\n"+rec2+"\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := finalizeEnrich(dir); err != nil {
+		t.Fatalf("finalize: %v", err)
+	}
+
+	// JSON: 2 entries
+	jb, err := os.ReadFile(filepath.Join(dir, "brokers_detail.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var parsed []BrokerDetail
+	if err := json.Unmarshal(jb, &parsed); err != nil {
+		t.Fatalf("decode json: %v", err)
+	}
+	if len(parsed) != 2 {
+		t.Errorf("json entries: got %d, want 2", len(parsed))
+	}
+
+	// CSV: 1 header + 2 rows
+	cf, err := os.Open(filepath.Join(dir, "brokers_detail.csv"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cf.Close()
+	rows, err := csv.NewReader(cf).ReadAll()
+	if err != nil {
+		t.Fatalf("read csv: %v", err)
+	}
+	if len(rows) != 3 {
+		t.Errorf("csv rows: got %d, want 3", len(rows))
+	}
+	header := rows[0]
+	want := []string{"CRD", "FirstName", "MiddleName", "LastName", "OtherNamesCount",
+		"BCScope", "IAScope", "DaysInIndustryStart", "CurrentFirmName",
+		"CurrentBranchStreet", "CurrentBranchCity", "CurrentBranchState",
+		"CurrentBranchZip", "CurrentEmploymentCount", "PreviousEmploymentCount",
+		"ExamCategoriesList", "RegisteredStatesCount", "RegisteredStatesList",
+		"RegisteredSROsList", "DisclosureCount", "HasDisclosure", "HasBCComments", "FetchedAt"}
+	if len(header) != len(want) {
+		t.Fatalf("csv header len: got %d (%v), want %d", len(header), header, len(want))
+	}
+	for i, h := range want {
+		if header[i] != h {
+			t.Errorf("csv col %d: got %q, want %q", i, header[i], h)
+		}
+	}
+	// Spot-check row for CRD=100: ExamCategoriesList contains "Series 7"
+	for _, r := range rows[1:] {
+		if r[0] == "100" {
+			if !strings.Contains(r[15], "Series 7") {
+				t.Errorf("expected 'Series 7' in ExamCategoriesList, got %q", r[15])
+			}
+		}
+		if r[0] == "200" {
+			if r[19] != "1" {
+				t.Errorf("expected DisclosureCount=1 for 200, got %q", r[19])
+			}
+			if r[20] != "Y" {
+				t.Errorf("expected HasDisclosure=Y for 200, got %q", r[20])
+			}
+		}
 	}
 }
