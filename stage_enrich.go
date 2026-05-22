@@ -44,7 +44,7 @@ func runEnrich() {
 		Out:     *flagOutDir,
 		Workers: workers,
 		Resume:  *flagResume,
-		BaseURL: "https://api.brokercheck.finra.org/search/individual",
+		BaseURL: apiURL,
 		CRDs:    crds,
 		Limit:   *flagLimit,
 	}
@@ -147,6 +147,8 @@ func fetchAndEmit(ctx context.Context, c *Client, baseURL, crd string, ew *enric
 		return nil
 	}
 	d.FetchedAt = time.Now().UTC().Format(time.RFC3339)
+	// emit and markDone are not atomic; a crash between them produces a
+	// duplicate detail line on resume. finalizeEnrich deduplicates by CRD.
 	ew.emit(d)
 	ew.markDone(crd)
 	return nil
@@ -222,7 +224,7 @@ func loadEnrichProgress(outDir string) (map[string]bool, error) {
 	done := map[string]bool{}
 	f, err := os.Open(filepath.Join(outDir, "enrich_progress.jsonl"))
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return done, nil
 		}
 		return nil, err
