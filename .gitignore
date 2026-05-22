@@ -5,3 +5,9 @@ brokers.jsonl
 progress.jsonl
 brokers_unique.json
 brokers_unique.csv
+brokers_detail.jsonl
+brokers_detail.json
+brokers_detail.csv
+enrich_progress.jsonl
+enrich_errors.jsonl
+run/
