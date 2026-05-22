@@ -1,2 +1,7 @@
 .env
 .vscode/
+brokercheck-scraper
+brokers.jsonl
+progress.jsonl
+brokers_unique.json
+brokers_unique.csv
