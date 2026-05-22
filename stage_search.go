@@ -450,7 +450,9 @@ func runSearch() {
 	ctx := context.Background()
 	rps := *flagRPS
 	if rps <= 0 {
-		// Back-compat: derive from --delay
+		if *flagDelayMs <= 0 {
+			log.Fatalf("--delay must be > 0 when --rps is unset; got --delay=%d", *flagDelayMs)
+		}
 		rps = 1000.0 / float64(*flagDelayMs)
 	}
 	limiter := newLimiter(rps, 0.05)
