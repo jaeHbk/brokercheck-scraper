@@ -8,11 +8,16 @@ employment-history, and disclosure data.
 
 ```sh
 ./brokercheck-scraper search    # Stage 1: discover all CRDs by zip-radius search
-./brokercheck-scraper enrich    # Stage 2: fetch full detail per CRD (NEW)
+./brokercheck-scraper enrich    # Stage 2: fetch full detail per CRD
 ./brokercheck-scraper dedupe    # Re-run final dedup pass on brokers.jsonl
 ```
 
 Running with no subcommand defaults to `search` (back-compat).
+
+**Flag placement:** Put flags AFTER the subcommand, e.g.
+`./brokercheck-scraper enrich --rps=2 --workers=4`. Putting flags before the
+subcommand also works, but stray flags after the subcommand are rejected with
+an error to avoid silently dropping them.
 
 ## Stage 1: search
 
@@ -32,16 +37,22 @@ radius query and returns brokers. The scraper handles:
 - **Final dedup pass** — `brokers.jsonl` is deduped by CRD into
   `brokers_unique.json` and `brokers_unique.csv`.
 
+### Outputs
+
+- `brokers.jsonl` — every broker emitted during the crawl (with overlap duplicates from subdivisions).
+- `progress.jsonl` — one line per completed search point. Used for resume.
+- `brokers_unique.json` / `brokers_unique.csv` — deduped by CRD; consumed by the enrich stage.
+
 ## Stage 2: enrich
 
 The search stage returns minimal fields per broker (CRD, name, current
 firm location). The enrich stage fetches `/search/individual/{CRD}` per
 broker to capture:
 
-- **Basic information** — middle name, aliases, BC/IA scope, days-in-industry start, sanctions
+- **Basic information** — middle name, aliases, BC/IA scope, days-in-industry start, sanction summary (e.g. permanent bar)
 - **Current employments** (BD + IA) — full firm names, branch addresses, SEC numbers
 - **Previous employments** (BD + IA) — work history with start/end dates
-- **Disclosures** — regulatory actions, customer disputes, sanctions
+- **Disclosures** — regulatory actions, customer disputes, criminal/civil events with full allegations and resolutions
 - **Exams** — Series 6, 7, 63, 65, SIE, etc. with dates
 - **Registered states** — every state the broker is licensed in
 - **Registered SROs** — FINRA, NYSE, etc. with registration categories
@@ -63,8 +74,8 @@ Or smoke-test first:
 ### Outputs
 
 - `brokers_detail.jsonl` — streaming, append-only, one parsed broker per line.
-- `enrich_progress.jsonl` — completed CRDs (used for resume).
-- `enrich_errors.jsonl` — CRDs that returned no data or malformed responses.
+- `enrich_progress.jsonl` — completed CRDs (used for resume). Errored CRDs are also recorded here so resume skips them.
+- `enrich_errors.jsonl` — CRDs that returned no data or malformed responses, with reason.
 - `brokers_detail.json` — full structured array of all enriched brokers (sorted by CRD).
 - `brokers_detail.csv` — flat CSV with the most-asked-for fields and counts.
 
@@ -107,6 +118,11 @@ pushes back. Going above ~3 req/s without proxies is risky.
 | Flag | Default | Notes |
 |---|---|---|
 | `--input` | `brokers_unique.json` | Source CRD list (relative to `--out`) |
+
+### Dedupe / back-compat
+| Flag | Default | Notes |
+|---|---|---|
+| `--dedupe-only` | `false` | Deprecated alias for `dedupe` subcommand |
 
 ## Resume / restart
 
