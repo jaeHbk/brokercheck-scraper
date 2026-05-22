@@ -3,6 +3,34 @@
 A Go scraper that pulls broker records from FINRA's BrokerCheck API for the
 entire US, working around the API's rate limits and pagination cap.
 
+## Recent changes (2026-05)
+
+The scraper was rewritten from a single-coordinate fetcher into a full-US
+workflow. Highlights:
+
+- **Adaptive radius subdivision** added — discovered via probing that the
+  API hard-caps pagination at `start + nrows ≤ 9000`. The old code silently
+  hit this cap and dropped data in dense metros (NYC at 25mi reports
+  122,223 brokers but only the first 9000 are reachable in one query).
+  Subdivision recurses up to depth 8 (~0.2mi cells) when an area exceeds
+  the cap.
+- **Spatial dedup** of zip codes added — 33,782 zips → 1,382 representative
+  search points (96% fewer redundant API calls), via haversine distance +
+  bucketed grid lookup.
+- **Polite single-IP rate limiting** — 6s jittered delay, exponential
+  backoff with `Retry-After` honoring, rotating User-Agent / Referer /
+  Origin headers (replaces the no-delay 10-worker pool that risked being
+  blocked).
+- **Streaming output + crash-resilient resume** — `brokers.jsonl` +
+  `progress.jsonl` replace in-memory accumulation; `--resume` skips
+  completed points.
+- **CSV header bug fixed** — old code's header-skip was commented out and
+  parsed the literal string `"zip"` as a coordinate.
+
+Smoke-tested on a single NYC zip (10001) at 25mi radius: **89,121 unique
+brokers** via 23 recursive subdivisions, vs ~9,000 the old code would have
+captured.
+
 ## What it does
 
 The BrokerCheck website's internal API
@@ -16,9 +44,9 @@ radius query and returns brokers. Two things make a full US scrape hard:
 
 This scraper handles both:
 
-- **Spatial dedup** of US zip codes — a 33,782-zip CSV is reduced to ~1,400
+- **Spatial dedup** of US zip codes — a 33,782-zip CSV is reduced to 1,382
   representative search points whose 25mi circles tile the country with
-  minimal overlap.
+  minimal overlap (at default `--spacing=40`).
 - **Adaptive radius subdivision** — when a query returns more brokers than
   the API will paginate through, the area is recursively split into 4
   smaller circles until each contains ≤9000 brokers (or max depth of 8 ≈
@@ -59,9 +87,12 @@ go build .
 
 Single-IP with default 6s delay:
 
-- ~1,400 spatial-dedup points × ~3 pages avg = ~4,200 base requests
+- 1,382 spatial-dedup points × ~3 pages avg = ~4,200 base requests
 - Adaptive subdivision adds ~1,000–2,000 more in dense metros
 - **Total ≈ 10–12 hours** for a complete US scrape
+
+The single NYC zip smoke test took ~9 hours alone (subdivision storm in
+Manhattan); most of the country is sparse and finishes much faster.
 
 If you have residential proxies, run with higher `--workers` and lower
 `--delay`. The current code uses one stdlib HTTP client; bring your own
