@@ -11,3 +11,6 @@ brokers_detail.csv
 enrich_progress.jsonl
 enrich_errors.jsonl
 run/
+
+# Generated PDF archives and pilot output
+reports/

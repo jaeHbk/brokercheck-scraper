@@ -1,0 +1,206 @@
+{
+  "fixture": "synthetic-multi-source.pdf",
+  "synthetic": true,
+  "crd": "9000002",
+  "annotation_method": "Source-authored synthetic specification; no real category/layout claim.",
+  "registrations": [],
+  "employments": [
+    {
+      "employer": "SYNTHETIC EMPLOYER",
+      "position": "Analyst",
+      "investment_related": false,
+      "location": "Albany, NY",
+      "start_raw": "01/2020",
+      "end_raw": "Present",
+      "physical_pages": [
+        1
+      ],
+      "fields": [
+        {
+          "label": "Employment",
+          "value": "01/2020 - Present",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Name",
+          "value": "SYNTHETIC EMPLOYER",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Position",
+          "value": "Analyst",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Investment Related",
+          "value": "N",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Location",
+          "value": "Albany, NY",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "type": "Customer Dispute",
+      "status": "Final",
+      "reported_id": "1",
+      "fields": [
+        {
+          "label": "Event Reference:",
+          "value": "SYNTH-EVENT-ONE",
+          "path": [],
+          "occurrence": 1
+        }
+      ],
+      "physical_pages": [
+        2,
+        3
+      ],
+      "sources": [
+        {
+          "label": "Broker",
+          "fields": [
+            {
+              "label": "Allegations:",
+              "value": "First line of the synthetic narrative.\nSecond line retains a meaningful line break.",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Unfamiliar Label:",
+              "value": "Unknown labels must survive.",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Repeated Label:",
+              "value": "First occurrence.",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Repeated Label:",
+              "value": "Second occurrence.",
+              "path": [],
+              "occurrence": 2
+            },
+            {
+              "label": "Blank Amount:",
+              "value": "",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Complaint Pending?",
+              "value": "No",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Long Narrative:",
+              "value": "Narrative begins on physical page 2.\nNarrative continues on physical page 3.",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            }
+          ],
+          "physical_pages": [
+            2,
+            3
+          ]
+        },
+        {
+          "label": "Broker",
+          "fields": [
+            {
+              "label": "Allegations:",
+              "value": "Second source version with the same label.",
+              "path": [],
+              "occurrence": 1
+            }
+          ],
+          "physical_pages": [
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Customer Dispute",
+      "status": "Final",
+      "reported_id": "2",
+      "fields": [],
+      "physical_pages": [
+        3
+      ],
+      "sources": [
+        {
+          "label": "Firm",
+          "fields": [
+            {
+              "label": "Allegations:",
+              "value": "A separate second event.",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Settlement Amount:",
+              "value": "$100.00",
+              "path": [],
+              "occurrence": 1
+            }
+          ],
+          "physical_pages": [
+            3
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": [
+    {
+      "category": "Customer Dispute",
+      "status": "all",
+      "count": 2,
+      "raw": "2",
+      "physical_pages": [
+        1
+      ]
+    },
+    {
+      "category": "all",
+      "status": "all",
+      "count": 2,
+      "raw": "2",
+      "physical_pages": [
+        1
+      ]
+    }
+  ],
+  "expected_counts": {
+    "registrations": 0,
+    "employments": 1,
+    "events": 2,
+    "sources": 3,
+    "disclosure_fields": 11
+  },
+  "notes": [
+    "Event1 has two Broker-labeled source versions, not two events.",
+    "Narrative across pages must remain in source1 Long Narrative field.",
+    "First event includes an event-level field before any source."
+  ],
+  "sha256": "d16822153035d93591c87f5ec3914e295f44938a383c595dbe0f64eaf3307652"
+}

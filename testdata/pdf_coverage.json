@@ -1,0 +1,122 @@
+{
+  "backend": "Poppler26.05.0",
+  "real_reports_retained": 1,
+  "distinct_live_attempts": 3,
+  "live_acquisition_stopped": "Sustained HTTP403 on two candidate IDs; no further live requests.",
+  "fixtures": [
+    {
+      "path": "testdata/pdf/1691670.pdf",
+      "sha256": "7eb32c9390001378a37398eaae209e42700b4f889d1f698efde97f7b99c0ee54",
+      "synthetic": false,
+      "expected": "testdata/pdf_expected/1691670.json",
+      "expected_counts": {
+        "registrations": 3,
+        "current_registrations": 2,
+        "previous_registrations": 1,
+        "employments": 2,
+        "events": 1,
+        "sources": 1,
+        "disclosure_fields": 12,
+        "history_fields": 22
+      }
+    },
+    {
+      "path": "testdata/pdf/synthetic-no-disclosures.pdf",
+      "sha256": "04c17309ed38850c4efbe9ec05d7473ad6416df4379dd25c119dcce7a1c1dfaf",
+      "synthetic": true,
+      "expected": "testdata/pdf_expected/synthetic-no-disclosures.json",
+      "expected_counts": {
+        "registrations": 0,
+        "employments": 1,
+        "events": 0,
+        "sources": 0,
+        "disclosure_fields": 0
+      }
+    },
+    {
+      "path": "testdata/pdf/synthetic-multi-source.pdf",
+      "sha256": "d16822153035d93591c87f5ec3914e295f44938a383c595dbe0f64eaf3307652",
+      "synthetic": true,
+      "expected": "testdata/pdf_expected/synthetic-multi-source.json",
+      "expected_counts": {
+        "registrations": 0,
+        "employments": 1,
+        "events": 2,
+        "sources": 3,
+        "disclosure_fields": 11
+      }
+    }
+  ],
+  "categories": {
+    "no_disclosures": {
+      "real": false,
+      "synthetic": true,
+      "real_pending": true
+    },
+    "current_prior_registration": {
+      "real": true,
+      "synthetic": false,
+      "real_pending": false
+    },
+    "separate_employment": {
+      "real": true,
+      "synthetic": true,
+      "real_pending": false
+    },
+    "multiple_events": {
+      "real": false,
+      "synthetic": true,
+      "real_pending": true
+    },
+    "multiple_source_versions": {
+      "real": false,
+      "synthetic": true,
+      "real_pending": true
+    },
+    "required_page_continuation": {
+      "real": false,
+      "synthetic": true,
+      "real_pending": true
+    },
+    "blank_values": {
+      "real": true,
+      "synthetic": true,
+      "real_pending": false
+    },
+    "repeated_unknown_labels": {
+      "real": false,
+      "synthetic": true,
+      "real_pending": true
+    },
+    "customer_dispute": {
+      "real": true,
+      "synthetic": true,
+      "real_pending": false
+    },
+    "regulatory_action": {
+      "real": false,
+      "synthetic": false,
+      "real_pending": true
+    },
+    "criminal": {
+      "real": false,
+      "synthetic": false,
+      "real_pending": true
+    },
+    "civil_judicial": {
+      "real": false,
+      "synthetic": false,
+      "real_pending": true
+    },
+    "termination": {
+      "real": false,
+      "synthetic": false,
+      "real_pending": true
+    },
+    "financial": {
+      "real": false,
+      "synthetic": false,
+      "real_pending": true
+    }
+  }
+}

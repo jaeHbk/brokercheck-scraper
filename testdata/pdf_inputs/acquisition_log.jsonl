@@ -1,0 +1,3 @@
+{"crd": "1691670", "http_status": 200, "outcome": "downloaded", "sha256": "7eb32c9390001378a37398eaae209e42700b4f889d1f698efde97f7b99c0ee54", "bytes": 104544, "fetched_at": "2026-09-12T19:52:49Z", "source_url": "https://files.brokercheck.finra.org/individual/individual_1691670.pdf"}
+{"crd": "2819404", "source_url": "https://files.brokercheck.finra.org/individual/individual_2819404.pdf", "fetched_at": "2026-09-12T19:53:37.847078+00:00", "outcome": "access_failure", "error": "HTTP Error 403: Forbidden", "http_status": 403}
+{"crd": "5634972", "source_url": "https://files.brokercheck.finra.org/individual/individual_5634972.pdf", "fetched_at": "2026-09-12T19:53:42.943759+00:00", "outcome": "access_failure", "error": "HTTP Error 403: Forbidden", "http_status": 403}

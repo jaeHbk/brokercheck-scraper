@@ -1,0 +1,72 @@
+{
+  "fixture": "synthetic-no-disclosures.pdf",
+  "synthetic": true,
+  "crd": "9000001",
+  "annotation_method": "Source-authored synthetic specification; rendered PDF reviewed independently.",
+  "registrations": [],
+  "employments": [
+    {
+      "employer": "SYNTHETIC EMPLOYER",
+      "position": "Analyst",
+      "investment_related": false,
+      "location": "Albany, NY",
+      "start_raw": "01/2020",
+      "end_raw": "Present",
+      "physical_pages": [
+        1
+      ],
+      "fields": [
+        {
+          "label": "Employment",
+          "value": "01/2020 - Present",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Name",
+          "value": "SYNTHETIC EMPLOYER",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Position",
+          "value": "Analyst",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Investment Related",
+          "value": "N",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Location",
+          "value": "Albany, NY",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "counts": [
+    {
+      "category": "all",
+      "status": "all",
+      "count": 0,
+      "raw": "No",
+      "physical_pages": [
+        1
+      ]
+    }
+  ],
+  "expected_counts": {
+    "registrations": 0,
+    "employments": 1,
+    "events": 0,
+    "sources": 0,
+    "disclosure_fields": 0
+  },
+  "sha256": "04c17309ed38850c4efbe9ec05d7473ad6416df4379dd25c119dcce7a1c1dfaf"
+}
