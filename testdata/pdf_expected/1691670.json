@@ -1,0 +1,374 @@
+{
+  "fixture": "1691670.pdf",
+  "synthetic": false,
+  "crd": "1691670",
+  "sha256": "7eb32c9390001378a37398eaae209e42700b4f889d1f698efde97f7b99c0ee54",
+  "physical_page_count": 14,
+  "annotation_method": "Manual transcription from rendered original physical pages 3,10,12,13 before parser implementation; table values preserve displayed wrapping. Field labels in current registration summary are semantic column labels where PDF uses unlabeled text.",
+  "registrations": [
+    {
+      "kind": "current",
+      "scope": "IA",
+      "firm_name": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+      "firm_crd": "7691",
+      "location": "724 W LANCASTER AVE\nPBIG - WAYNE\nWAYNE, PA 19087",
+      "start_raw": "03/29/1996",
+      "end_raw": "",
+      "physical_pages": [
+        3
+      ],
+      "fields": [
+        {
+          "label": "Firm Name",
+          "value": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "CRD#",
+          "value": "7691",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Branch Location",
+          "value": "724 W LANCASTER AVE\nPBIG - WAYNE\nWAYNE, PA 19087",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Registered with this firm since",
+          "value": "03/29/1996",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    },
+    {
+      "kind": "current",
+      "scope": "BD",
+      "firm_name": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+      "firm_crd": "7691",
+      "location": "724 W LANCASTER AVE\nPBIG - WAYNE\nWAYNE, PA 19087",
+      "start_raw": "12/22/1987",
+      "end_raw": "",
+      "physical_pages": [
+        3
+      ],
+      "fields": [
+        {
+          "label": "Firm Name",
+          "value": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "CRD#",
+          "value": "7691",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Branch Location",
+          "value": "724 W LANCASTER AVE\nPBIG - WAYNE\nWAYNE, PA 19087",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Registered with this firm since",
+          "value": "12/22/1987",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    },
+    {
+      "kind": "previous",
+      "scope": "BD",
+      "firm_name": "PML SECURITIES COMPANY",
+      "firm_crd": "4082",
+      "location": "",
+      "start_raw": "08/1987",
+      "end_raw": "06/1988",
+      "physical_pages": [
+        10
+      ],
+      "fields": [
+        {
+          "label": "Registration Dates",
+          "value": "08/1987 - 06/1988",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Firm Name",
+          "value": "PML SECURITIES COMPANY",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "CRD#",
+          "value": "4082",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Branch Location",
+          "value": "",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    }
+  ],
+  "employments": [
+    {
+      "employer": "Bank of America, N.A.",
+      "position": "Private Wealth Advisor",
+      "investment_related": true,
+      "location": "WAYNE, PA, United States",
+      "start_raw": "06/2011",
+      "end_raw": "Present",
+      "physical_pages": [
+        10
+      ],
+      "fields": [
+        {
+          "label": "Employment",
+          "value": "06/2011 - Present",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Name",
+          "value": "Bank of America, N.A.",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Position",
+          "value": "Private Wealth Advisor",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Investment Related",
+          "value": "Y",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Location",
+          "value": "WAYNE, PA, United States",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    },
+    {
+      "employer": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+      "position": "PRIVATE WEALTH\nADVISOR",
+      "investment_related": true,
+      "location": "PHILADELPHIA, PA, United\nStates",
+      "start_raw": "10/1987",
+      "end_raw": "Present",
+      "physical_pages": [
+        10
+      ],
+      "fields": [
+        {
+          "label": "Employment",
+          "value": "10/1987 - Present",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Name",
+          "value": "MERRILL LYNCH, PIERCE, FENNER &\nSMITH INCORPORATED",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Position",
+          "value": "PRIVATE WEALTH\nADVISOR",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Investment Related",
+          "value": "Y",
+          "path": [],
+          "occurrence": 1
+        },
+        {
+          "label": "Employer Location",
+          "value": "PHILADELPHIA, PA, United\nStates",
+          "path": [],
+          "occurrence": 1
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "type": "Customer Dispute",
+      "status": "Closed-No Action / Withdrawn / Dismissed / Denied",
+      "reported_id": "1",
+      "physical_pages": [
+        13
+      ],
+      "fields": [],
+      "sources": [
+        {
+          "label": "Broker",
+          "fields": [
+            {
+              "label": "Employing firm when\nactivities occurred which led\nto the complaint:",
+              "value": "MERRILL LYNCH",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Allegations:",
+              "value": "CUSTOMER ALLEGED THAT STOCKS RECOMMENDED FOR HIS ACCOUNT\nWERE NOT SUITABLE FOR CAPITAL PRESERVATION.",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Product Type:",
+              "value": "Equity Listed (Common & Preferred Stock)",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Other Product Type(s):",
+              "value": "EQUITY-OTC",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Alleged Damages:",
+              "value": "$37,500.00",
+              "path": [],
+              "occurrence": 1
+            },
+            {
+              "label": "Date Complaint Received:",
+              "value": "03/21/2001",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Complaint Pending?",
+              "value": "No",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Status:",
+              "value": "Closed/No Action",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Status Date:",
+              "value": "08/20/2003",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Settlement Amount:",
+              "value": "",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Individual Contribution\nAmount:",
+              "value": "",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            },
+            {
+              "label": "Broker Statement",
+              "value": "THIS MATTER IS DEEMED CLOSED BECAUSE THERE IS NO MERIT.",
+              "path": [
+                "Customer Complaint Information"
+              ],
+              "occurrence": 1
+            }
+          ],
+          "physical_pages": [
+            13
+          ]
+        }
+      ]
+    }
+  ],
+  "counts": [
+    {
+      "category": "Customer Dispute",
+      "status": "all",
+      "count": 1,
+      "raw": "1",
+      "physical_pages": [
+        3
+      ]
+    },
+    {
+      "category": "Customer Dispute",
+      "status": "Pending",
+      "count": 0,
+      "raw": "0",
+      "physical_pages": [
+        12
+      ]
+    },
+    {
+      "category": "Customer Dispute",
+      "status": "Final",
+      "count": 1,
+      "raw": "1",
+      "physical_pages": [
+        12
+      ]
+    },
+    {
+      "category": "Customer Dispute",
+      "status": "On Appeal",
+      "count": null,
+      "raw": "N/A",
+      "physical_pages": [
+        12
+      ]
+    }
+  ],
+  "expected_counts": {
+    "registrations": 3,
+    "current_registrations": 2,
+    "previous_registrations": 1,
+    "employments": 2,
+    "events": 1,
+    "sources": 1,
+    "disclosure_fields": 12,
+    "history_fields": 22
+  },
+  "notes": [
+    "Employment and registration are independent records.",
+    "Prior registration branch location and two disclosure amounts are explicitly blank.",
+    "Other Business Activities continues on physical page11; PDF repeats/overlaps some OBA text at page boundaries. OBA structured extraction is outside R2.",
+    "No event all-category total is printed; category/status cells are independent.",
+    "Only customer-dispute category and one reporting-source label verified in real report."
+  ]
+}

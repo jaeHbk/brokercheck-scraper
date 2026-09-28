@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"math"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"sync"
 	"time"
@@ -28,6 +30,7 @@ type Limiter struct {
 }
 
 func newLimiter(ratePerSec, floor float64) *Limiter {
+	floor = math.Min(floor, ratePerSec)
 	return &Limiter{
 		rl:         rate.NewLimiter(rate.Limit(ratePerSec), 1),
 		ceiling:    ratePerSec,
@@ -203,3 +206,98 @@ func (c *Client) computeBackoff(attempt int) time.Duration {
 }
 
 func (c *Client) sleep(d time.Duration) { time.Sleep(d) }
+
+// FetchPDF streams into a caller-owned temporary file. Every attempt truncates it.
+func (c *Client) FetchPDF(ctx context.Context, url, temporaryPath string) (HTTPMetadata, error) {
+	var meta HTTPMetadata
+	var lastErr error
+	for attempt := 1; attempt <= c.retries; attempt++ {
+		if err := c.limiter.Wait(ctx); err != nil {
+			return meta, err
+		}
+		f, err := os.OpenFile(temporaryPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		if err != nil {
+			return meta, err
+		}
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+		if err != nil {
+			return meta, errors.Join(err, f.Close())
+		}
+		c.applyHeaders(req)
+		req.Header.Set("Accept", "application/pdf")
+		resp, err := c.httpClient.Do(req)
+		pause := c.computeBackoff(attempt)
+		retry := true
+		if err != nil {
+			lastErr = err
+		} else {
+			meta = HTTPMetadata{StatusCode: resp.StatusCode, ContentType: resp.Header.Get("Content-Type"), ETag: resp.Header.Get("ETag"), LastModified: resp.Header.Get("Last-Modified"), RetrievedAt: time.Now().UTC().Format(time.RFC3339Nano)}
+			if resp.StatusCode != http.StatusOK {
+				lastErr = &HTTPStatusError{StatusCode: resp.StatusCode, URL: url}
+				retry = resp.StatusCode == 429 || resp.StatusCode >= 500
+				if retry {
+					c.limiter.onError()
+					pause = c.breakerPause
+					if d := pdfRetryAfter(resp.Header.Get("Retry-After"), time.Now()); d > pause {
+						pause = d
+					}
+				}
+				if e := resp.Body.Close(); e != nil && lastErr == nil {
+					lastErr = e
+				}
+			} else {
+				_, copyErr := io.Copy(f, resp.Body)
+				closeErr := resp.Body.Close()
+				if copyErr != nil {
+					lastErr = copyErr
+				} else if closeErr != nil {
+					lastErr = closeErr
+				} else {
+					if e := f.Sync(); e != nil {
+						f.Close()
+						return meta, e
+					}
+					if e := f.Close(); e != nil {
+						return meta, e
+					}
+					c.limiter.onSuccess()
+					return meta, nil
+				}
+			}
+		}
+		if err := f.Close(); err != nil {
+			return meta, err
+		}
+		if !retry {
+			return meta, lastErr
+		}
+		if attempt < c.retries {
+			if err := pdfWait(ctx, pause); err != nil {
+				return meta, err
+			}
+		}
+	}
+	if lastErr == nil {
+		lastErr = fmt.Errorf("attempts must be positive")
+	}
+	return meta, fmt.Errorf("PDF attempts exhausted: %w", lastErr)
+}
+func pdfRetryAfter(value string, now time.Time) time.Duration {
+	if n, e := strconv.Atoi(value); e == nil && n >= 0 {
+		return time.Duration(n) * time.Second
+	}
+	if t, e := http.ParseTime(value); e == nil && t.After(now) {
+		return t.Sub(now)
+	}
+	return 0
+}
+func pdfWait(ctx context.Context, d time.Duration) error {
+	t := time.NewTimer(d)
+	defer t.Stop()
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-t.C:
+		return nil
+	}
+}

@@ -183,3 +183,29 @@ drops, and other interruptions. Some practical tips:
 ## Resource
 
 [FINRA BrokerCheck](https://brokercheck.finra.org/)
+
+## Detailed Report PDFs
+
+The `reports` command is separate from website JSON enrichment. It reads the selected CRDs from the existing JSON array (`ind_source_id` must be a positive decimal string), retains immutable PDFs, extracts positioned text with Poppler, and publishes validated structured JSON and linked CSVs. It does not initiate search or imply national population coverage.
+
+Requirements: Go 1.25.3 or later under the existing module constraint; Poppler `pdfinfo` and `pdftotext` (qualified version and coverage are recorded in `docs/pdf-backend.md`). Install Poppler using your platform package manager. Set `PDFINFO` and `PDFTOTEXT` to executable paths if they are not on PATH. No OCR is performed; unreadable or unknown required content remains unresolved.
+
+```sh
+mkdir -p run
+go test ./...
+go test -race ./...
+go vet ./...
+go build -o ./run/brokercheck-scraper .
+./run/brokercheck-scraper reports --out=run/pdf --input=/absolute/path/selected-crds.json --limit=20
+./run/brokercheck-scraper reports --out=run/pdf --input=/absolute/path/selected-crds.json --reparse
+./run/brokercheck-scraper reports --out=run/pdf --input=/absolute/path/selected-crds.json --retry-failed
+./run/brokercheck-scraper reports --out=run/pdf --input=/absolute/path/selected-crds.json --refresh
+```
+
+Relative input paths resolve against `--out`, including the default `brokers_unique.json`. Inputs are validated, deduplicated, and sorted numerically. Defaults are two workers, 0.2 requests/second shared across workers, five maximum attempts, unlimited selected IDs, and resume enabled. This rate is an engineering starting point. The limit is applied after mode selection. `--reparse`, `--refresh`, and `--retry-failed` are mutually exclusive and require resume enabled. Reparse makes no network calls and uses the latest retrieved snapshot. Refresh fetches again, preserving prior PDF bytes and extraction versions. Retry-failed selects unresolved outcomes, reuses valid bytes after parse failures, and fetches again after download failures. Ordinary `--resume=false` reparses verified retained bytes; only refresh forces a new download.
+
+Ordinary resume skips results only after verifying PDF bytes, artifact references, exact versions, and validation. Transient failures are retried; unavailable, access-rejected, invalid PDF, and review outcomes stay visible until explicitly selected. A later failed refresh makes the broker unresolved even when a prior accepted artifact exists. The broker CSV reports selected and last accepted hashes separately. Exit 0 means every selected CRD is currently accepted and exports were published; exit 2 means unresolved items or cancellation; exit 1 means invalid configuration, missing dependencies, or infrastructure failure.
+
+Artifacts are under `reports/` within the output directory: immutable `pdf/<crd>/<sha256>.pdf`, positioned `text/<sha256>/<extractor>.json`, versioned `parsed/<crd>/<sha256>/<versions>.json`, append-only `manifest.jsonl`, and `run_summary.json`. `reports/exports/current.json` points to one atomic generation containing the broker JSONL/CSV, registration and employment histories, ordered history fields, disclosure events, reporting-source versions, ordered disclosure fields, disclosure count cells, and validation JSONL. Resolve its `path` against `--out`. Accepted child rows trace to report hashes, parent IDs, and physical-page evidence. Partial results stay in the archive and validation output. Existing `brokers_detail.*` exports remain independent.
+
+See `docs/pdf-data-dictionary.md` for exact CSV column order and null/date semantics; `docs/pdf-acceptance.md` for test evidence, acquisition outcomes, current coverage limits, and the full-run readiness decision. A downloaded report or matching disclosure count alone does not establish complete extraction. Full collection requires separate authorization after pilot gates pass. The earlier search/enrichment resource estimates do not apply to PDF collection.

@@ -29,6 +29,9 @@ var (
 )
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "reports" {
+		os.Exit(reportsMain(os.Args[2:]))
+	}
 	// Allow `<binary> <subcommand> <flags...>` by lifting a leading
 	// non-flag arg out of os.Args before flag.Parse runs. Falling back
 	// to flag.Arg(0) keeps the `<binary> <flags...> <subcommand>` form
